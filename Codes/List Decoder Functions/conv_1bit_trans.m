@@ -1,4 +1,4 @@
-function [u,next_state] = conv1bTrans(v,curr_state,c)
+function [u,next_state] = conv_1bit_trans(v,curr_state,c)
 u=mod(v*c(1),2);
 for j=2:length(c)
     if(c(j)==1)

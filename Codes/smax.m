@@ -6,5 +6,4 @@ for im = i_start:i_cur
         result = temp;
     end
 end
-
 end
