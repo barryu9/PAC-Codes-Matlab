@@ -11,7 +11,7 @@ end
 for i = K - 1:-1:1
     for j = N - r:-1:i + 1
         if G(i, j) == 1
-            G(i, :) = mod(G(i, :)+G(j, :), 2);
+            G(i, :) = mod(G(i, :) + G(j, :), 2);
         end
     end
 end

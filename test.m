@@ -4,34 +4,25 @@
 clear
 addpath(genpath('Codes/'))
 
-N = 128;
-k = 64;
-g = [1, 0, 1, 1, 0, 1, 1]; %c=[c_0,c_1,...,c_m]
-snr_dB = 1.5;
-pac = paccode(N, k, g, 0, 'RM-Polar', 3);
+N = 512;
+k = 256;
+crc_length = 0;
+F_N=[1 0;1 1];
 
-Pe = pac.get_PE_GA(4);
-sigma = 1 / sqrt(2*pac.R) * 10^(-snr_dB / 20);
-
-%
-% u=[0;1;1;0];
-% llr = [-6.24841359764031	1.32876011828409	-1.42233129484890	4.05711149046604	-3.63127705148068	2.81019082828330	1.54540323409445	-3.36647459351069]';
-% [d]= pac.My_Fano_decoder(llr,Pe,1);
-
-error = 0;
-for i = 1:5000
-    u = double(rand(k, 1) > 0.5);
-    x = pac.encode(u);
+pc_params = init_polar_code(N,k,crc_length,F_N);
+rp = GA_rate_profiling(N,k,2.5);
+snr_dB=3;
+tic
+for i = 1:1000
+    u = double(rand(k,1)>0.5);
+    x = PC_encode(pc_params,rp,u);
+    sigma = 1/sqrt(2 * pc_params.R) * 10^(-snr_dB/20);
     bpsk = 1 - 2 * x;
     noise = randn(N, 1);
     y = bpsk + sigma * noise;
-    llr = 2 / sigma^2 * y;
-    [d] = pac.My_Fano_decoder(llr, Pe, 1);
-    i
-    if (sum(sum(u ~= d)) > 0)
-        error = error + 1;
-        error
-    end
-end
+    llr = 2/sigma^2*y;
+    d = PC_SCL_decoder(pc_params,rp, llr, 32);
+%     d = PC_SCL_decoder_test(N,k,rp.frozen_bits_mask,crc_length,pc_params.H_crc,pc_params.lambda_offset,pc_params.llr_layer_vec,pc_params.bit_layer_vec,llr, 32);
 
-error / i
+end
+toc
