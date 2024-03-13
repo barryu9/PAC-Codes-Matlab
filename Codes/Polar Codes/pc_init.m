@@ -1,4 +1,4 @@
-function [pc_params] = init_polar_code(N,k,crc_length,F_N)
+function [pc_params] = pc_init(N,k,crc_length,F_N)
 %INIT_POLAR_CODES 设置原始设定变量来初始化Polar码
 %   输入：
 %    - N 码长
@@ -7,7 +7,7 @@ function [pc_params] = init_polar_code(N,k,crc_length,F_N)
 %    - F_N 极化核
 
 %  输出：
-%   - pc_paras 结构体，包含以下字段：
+%   - pc_params 结构体，包含以下字段：
 %       -- N 码长
 %       -- n log2(N)
 %       -- k 信息序列长度
