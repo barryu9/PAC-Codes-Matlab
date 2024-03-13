@@ -3,14 +3,6 @@ function d_esti = PC_SCL_decoder(pc_params,rp, llr, L)
 %Frequently calling sub-functions will derease the efficiency of MATLAB
 %codes.
 %const
-local N;
-local k;
-local lambda_offset;
-local bit_layer_vec;
-local llr_layer_vec;
-local phi;
-local C;
-local P;
 
 N = pc_params.N;
 k = pc_params.k;
@@ -195,15 +187,6 @@ end
 end
 
 function C = update_C_test(N,lambda_offset,bit_layer_vec, phi, C, u)
-local N;
-local k;
-local lambda_offset;
-local bit_layer_vec;
-local llr_layer_vec;
-local phi;
-local C;
-local P;
-
 phi_mod_2 = mod(phi, 2);
 C(1, 1+phi_mod_2) = u;
 if (phi_mod_2 == 1) && (phi ~= N - 1)
