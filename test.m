@@ -10,8 +10,8 @@ crc_length = 0;
 F_N=[1 0;1 1];
 
 pc_params = init_polar_code(N,k,crc_length,F_N);
-rp = GA_rate_profiling(N,k,2.5);
-snr_dB=3;
+rp = GA_rate_profiling(N,k,3);
+snr_dB=100;
 tic
 for i = 1:1000
     u = double(rand(k,1)>0.5);
@@ -23,6 +23,8 @@ for i = 1:1000
     llr = 2/sigma^2*y;
     d = PC_SCL_decoder(pc_params,rp, llr, 32);
 %     d = PC_SCL_decoder_test(N,k,rp.frozen_bits_mask,crc_length,pc_params.H_crc,pc_params.lambda_offset,pc_params.llr_layer_vec,pc_params.bit_layer_vec,llr, 32);
-
+    if d~=u
+        printf("worse")
+    end
 end
 toc
