@@ -1,14 +1,16 @@
 clear
 addpath(genpath('Codes/'))
 tic;
-N = 512;
-k = 256;
+N = 256;
+k = 128;
 crc_length = 0;
 F_N=[1 0;1 1];
 gen = [1 0 1 1 0 1 1];
-dsnr = 3.5;
+dsnr_dB = 2.5;
 pac_params = pac_init(N,k,crc_length,F_N,gen);
-rp = GA_rate_profiling(N,k+crc_length,dsnr);
+rp = rp_RM_Polar(N,k+crc_length,dsnr_dB);
+
+rp = rp_modify(rp,[91,93,102,103,106,143,150],[173,179,203,213,226,233,241]);
 
 snr_dB = [2.75:0.25:4];
 n_iter=[60000];
@@ -16,9 +18,7 @@ n_iter=[60000];
 frame_errors_count=zeros(1,length(snr_dB));
 bit_errors_count=zeros(1,length(snr_dB));
 
-FER=zeros(1,length(snr_dB));
-BER=zeros(1,length(snr_dB));
-L=32;
+L=128;
 pe=zeros(1,N);
 delta=1;
 
@@ -37,7 +37,7 @@ for i=1:length(snr_dB)
             frame_errors_count(i)=frame_errors_count(i)+1;
             bit_errors_count(i)=bit_errors_count(i)+errs;
         end
-        if(mod(ii, 1)==0)
+        if(mod(ii, 10)==0)
             display_info(N,k,snr_dB(i),ii,n_iter(i),L,frame_errors_count(i),bit_errors_count(i));
         end
     end
