@@ -5,9 +5,9 @@ addpath(genpath('..'))
 N = 256;
 k = 128;
 crc_length = 0;
+
 F_N=[1 0;1 1];
-gen = [1 0 1 1 0 1 1];
-pac_params = pac_init(N,k,crc_length,F_N,gen);
+pac_params = pc_init(N,k,crc_length,F_N);
 
 dsnr_dB = 2.5;
 rp = rp_RM_Polar(N,k+crc_length,dsnr_dB);
@@ -19,6 +19,8 @@ L=32;
 min_iterations = 10000;
 max_iterations = 100000;
 max_error_num = 10000;
+
+
 frame_errors_count=zeros(1,length(snr_dB));
 bit_errors_count=zeros(1,length(snr_dB));
 n_iter = zeros(1,length(snr_dB));
@@ -32,18 +34,24 @@ for i=1:length(snr_dB)
     fprintf("Now Running SNR(dB)=%f\n",snr_dB(i))
     for ii = 1:max_iterations
         tic;
+
+        % 自适应仿真次数，优先保证达到最小仿真次数(min_iterations)
+        % 如果错误个数大于max_iterations则直接结束
+
         if ii < min_iterations
         elseif frame_errors_count(i) < max_error_num
         else
             continue;
         end
+
+
         u = double(rand(k,1)>0.5);
-        x = pac_encode(pac_params,rp,u);
+        x = pc_encode(pac_params,rp,u);
         bpsk = 1 - 2 * x;
         noise = randn(N, 1);
         y = bpsk + sigma * noise;
         llr = 2/sigma^2*y;
-        d = pac_SCL_decoder(pac_params,rp,llr,L);
+        d = pc_SCL_decoder(pac_params,rp,llr,L);
         errs=sum(sum(u~=d));
         n_iter(i)=ii;
         if(errs>0)
@@ -52,13 +60,13 @@ for i=1:length(snr_dB)
         end
 
         update_mod = mod(ii,update_frequency);
-
         elapsetime_filter(update_mod+1)=toc;
-        elapsetime_average = mean()
+        elapsetime_average = mean(elapsetime_filter);
+
         if(update_mod==0)
-           fprintf("@%i, Block Error(s):%i, BLER=%f; Bit Error(s):%i, BER=%f.; %.2f it/s, %s remaining\n",...
+           fprintf("@%i, Block Error(s):%i, BLER=%.2e; Bit Error(s):%i, BER=%.2e.; %.2f it/s, %s remaining\n",...
               ii,frame_errors_count(i),frame_errors_count(i)/ii,bit_errors_count(i),bit_errors_count(i)/ii,...
-              1/elapsetime, string(seconds(elapsetime*(max_iterations-ii)),"hh:mm:ss"))
+              1/elapsetime_average, string(seconds(elapsetime_average*(max_iterations-ii)),"hh:mm:ss"))
         end
     end
 

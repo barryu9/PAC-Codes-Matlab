@@ -46,6 +46,7 @@ if (crc_length > 0)
     % g_crc = [1, 0, 0, 1, 1]; 也可以自己设置g_crc;
     [G_crc, pac_params.H_crc] = crc_generator_matrix(g_crc, k);
     pac_params.crc_parity_check = G_crc(:, k+1:end)';
+    
 else
     pac_params.crc_parity_check = [];
     pac_params.H_crc = [];

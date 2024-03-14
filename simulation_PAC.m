@@ -5,8 +5,10 @@ addpath(genpath('..'))
 N = 256;
 k = 128;
 crc_length = 0;
+
 F_N=[1 0;1 1];
 gen = [1 0 1 1 0 1 1];
+
 pac_params = pac_init(N,k,crc_length,F_N,gen);
 
 dsnr_dB = 2.5;
@@ -17,8 +19,10 @@ snr_dB = [2.5];
 L=32;
 
 min_iterations = 10000;
-max_iterations = 100000;
+max_iterations = 10000;
 max_error_num = 10000;
+
+
 frame_errors_count=zeros(1,length(snr_dB));
 bit_errors_count=zeros(1,length(snr_dB));
 n_iter = zeros(1,length(snr_dB));
@@ -32,11 +36,17 @@ for i=1:length(snr_dB)
     fprintf("Now Running SNR(dB)=%f\n",snr_dB(i))
     for ii = 1:max_iterations
         tic;
+
+        % 自适应仿真次数，优先保证达到最小仿真次数(min_iterations)
+        % 如果错误个数大于max_iterations则直接结束
+
         if ii < min_iterations
         elseif frame_errors_count(i) < max_error_num
         else
             continue;
         end
+
+
         u = double(rand(k,1)>0.5);
         x = pac_encode(pac_params,rp,u);
         bpsk = 1 - 2 * x;
