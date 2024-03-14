@@ -18,9 +18,9 @@ rp = rp_RM_Polar(N,k+crc_length,dsnr_dB);
 snr_dB = [1.5];
 L=32; 
 
-min_block_num = 10000;
-max_block_num = 10000;
-max_error_num = 10000;
+min_block_num = 100000;
+max_block_num = 100000;
+max_error_num = 100000;
 
 
 frame_errors_count=zeros(1,length(snr_dB));
