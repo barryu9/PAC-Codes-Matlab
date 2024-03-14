@@ -52,13 +52,13 @@ for i=1:length(snr_dB)
         end
 
         update_mod = mod(ii,update_frequency);
-        elapsetime_filter(update_mod+1)=toc;
-        elapsetime_average = mean(elapsetime_filter);
 
+        elapsetime_filter(update_mod+1)=toc;
+        elapsetime_average = mean()
         if(update_mod==0)
-           fprintf("@%i, Block Error(s):%i, BLER=%.2e; Bit Error(s):%i, BER=%.2e.; %.2f it/s, %s remaining\n",...
+           fprintf("@%i, Block Error(s):%i, BLER=%f; Bit Error(s):%i, BER=%f.; %.2f it/s, %s remaining\n",...
               ii,frame_errors_count(i),frame_errors_count(i)/ii,bit_errors_count(i),bit_errors_count(i)/ii,...
-              1/elapsetime_average, string(seconds(elapsetime_average*(max_iterations-ii)),"hh:mm:ss"))
+              1/elapsetime, string(seconds(elapsetime*(max_iterations-ii)),"hh:mm:ss"))
         end
     end
 
