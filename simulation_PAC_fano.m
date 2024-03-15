@@ -15,7 +15,7 @@ dsnr_dB = 2.5;
 rp = rp_RM_Polar(N,k+crc_length,dsnr_dB);
 rp = rp_modify(rp,[91,93,102,103,106,143,150],[173,179,203,213,226,233,241]);
 
-snr_dB = [3];
+snr_dB = [2.5];
 
 min_block_num = 500000;
 max_block_num = 500000;
