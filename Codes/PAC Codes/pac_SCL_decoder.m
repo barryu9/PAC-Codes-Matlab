@@ -46,7 +46,7 @@ for batch_index = 1:batchsize
                 continue;
             end
             %  P(:, l_index) = update_P_test(N,lambda_offset,llr_layer_vec,llr, phi, P(:, l_index), C(:, 2*l_index-1:2*l_index));
-            %% 下面这一段相当于上面的一句 update_P，放在里面避免传参可以提高速度
+            %   -----------------------------------------------------------------------
             layer = llr_layer_vec(phi + 1);
 
             switch phi %Decoding bits u_0 and u_N/2 needs channel LLR, so the decoding of them is separated from other bits.
@@ -104,7 +104,7 @@ for batch_index = 1:batchsize
                         end
                     end
             end
-            %%
+            %   -----------------------------------------------------------------------
         end
 
         if frozen_bits_mask(phi + 1) == 0 %if now we decode an unfrozen bit
@@ -115,7 +115,9 @@ for batch_index = 1:batchsize
                 end
                 curr_state_temp(:, l_index) = curr_state(:, l_index);
 
-                %             [u_left(l_index), curr_state(:, l_index)] = conv_1bit_trans(0, curr_state(:, l_index), gen);
+                %   [u_left(l_index), curr_state(:, l_index)] = conv_1bit_trans(0, curr_state(:, l_index), gen);
+                %   -----------------------------------------------------------------------
+
                 u_left(l_index)=mod(0*gen(1),2);
                 for j=2:length(gen)
                     if(gen(j)==1)
@@ -127,9 +129,11 @@ for batch_index = 1:batchsize
                     curr_state(i, l_index)=curr_state(i-1, l_index);
                 end
                 curr_state(1, l_index)=0;
-                %             curr_state(:, l_index)=[0;curr_state(1:end-1,l_index)];
+                %   -----------------------------------------------------------------------
 
-                %             [u_right(l_index), curr_state_temp(:, l_index)] = conv_1bit_trans(1, curr_state_temp(:, l_index), gen);
+                %  [u_right(l_index), curr_state_temp(:, l_index)] = conv_1bit_trans(1, curr_state_temp(:, l_index), gen);
+                %   -----------------------------------------------------------------------
+
                 u_right(l_index)=mod(1*gen(1),2);
                 for j=2:length(gen)
                     if(gen(j)==1)
@@ -141,7 +145,7 @@ for batch_index = 1:batchsize
                     curr_state_temp(i, l_index)=curr_state_temp(i-1, l_index);
                 end
                 curr_state_temp(1, l_index)=1;
-                %             curr_state_temp(:, l_index)=[1;curr_state_temp(1:end-1,l_index)];
+            %   -----------------------------------------------------------------------
 
 
                 PM_pair(1, l_index) = PM(l_index)+abs(P(1, l_index))* (u_left(l_index)~=0.5*(1-sign(P(1, l_index))));
@@ -170,6 +174,8 @@ for batch_index = 1:batchsize
                     case 1 % PM of the second row is lower
                         d(cnt_u, l_index) = 1;
                         %C(:, 2*l_index-1:2*l_index) = update_C_test(N,lambda_offset,bit_layer_vec, phi, C(:, 2*l_index-1:2*l_index), 1);
+                        %   -----------------------------------------------------------------------
+
                         phi_mod_2 = mod(phi, 2);
                         C(1, 2*l_index-1+phi_mod_2) = u_right(l_index);
                         if (phi_mod_2 == 1) && (phi ~= N - 1)
@@ -193,11 +199,14 @@ for batch_index = 1:batchsize
 
                             end
                         end
+                        %   -----------------------------------------------------------------------
+
                         PM(l_index) = PM_pair(2, l_index);
                         curr_state(:, l_index) = curr_state_temp(:, l_index);
                     case 2 % PM of the first row is lower
                         d(cnt_u, l_index) = 0;
-                        %                     C(:, 2*l_index-1:2*l_index) = update_C_test(N,lambda_offset,bit_layer_vec, phi, C(:, 2*l_index-1:2*l_index), 0);
+                        % C(:, 2*l_index-1:2*l_index) = update_C_test(N,lambda_offset,bit_layer_vec, phi, C(:, 2*l_index-1:2*l_index), 0);
+                        %   -----------------------------------------------------------------------
                         phi_mod_2 = mod(phi, 2);
                         C(1, 2*l_index-1+phi_mod_2) = u_left(l_index);
                         if (phi_mod_2 == 1) && (phi ~= N - 1)
@@ -221,6 +230,7 @@ for batch_index = 1:batchsize
 
                             end
                         end
+                        %   -----------------------------------------------------------------------
                         PM(l_index) = PM_pair(1, l_index);
                     case 3 %
                         index = kill_index(kill_cnt);
@@ -235,6 +245,8 @@ for batch_index = 1:batchsize
                         d(cnt_u, index) = 1;
 
                         phi_mod_2 = mod(phi, 2);
+
+                        %   -----------------------------------------------------------------------
                         C(1, 2*l_index-1+phi_mod_2) = u_left(l_index);
                         C(1, 2*index-1+phi_mod_2) = u_right(l_index);
                         if (phi_mod_2 == 1) && (phi ~= N - 1)
@@ -261,6 +273,8 @@ for batch_index = 1:batchsize
                                 %         operation_count_C=operation_count_C+1;
                             end
                         end
+                        %   -----------------------------------------------------------------------
+
                         PM(l_index) = PM_pair(1, l_index);
                         PM(index) = PM_pair(2, l_index);
                 end
@@ -272,7 +286,7 @@ for batch_index = 1:batchsize
                 if activepath(l_index) == 0
                     continue;
                 end
-
+                %   -----------------------------------------------------------------------
                 u_temp=mod(0*gen(1),2);
                 for j=2:length(gen)
                     if(gen(j)==1)
@@ -280,13 +294,13 @@ for batch_index = 1:batchsize
                     end
                 end
 
-                %             curr_state(:, l_index)=[0;curr_state(1:end-1,l_index)];
                 for i=conv_depth-1:-1:2
                     curr_state(i, l_index)=curr_state(i-1, l_index);
                 end
                 curr_state(1, l_index)=0;
-
+                %   -----------------------------------------------------------------------
                 PM(l_index) = PM(l_index)+abs(P(1, l_index))* (u_temp~=0.5*(1-sign(P(1, l_index))));
+                %   -----------------------------------------------------------------------
                 phi_mod_2 = mod(phi, 2);
                 C(1, 2*l_index-1+phi_mod_2) = u_temp;
 
@@ -310,6 +324,8 @@ for batch_index = 1:batchsize
                         %         operation_count_C=operation_count_C+1;
                     end
                 end
+                %   -----------------------------------------------------------------------
+
             end
         end
     end

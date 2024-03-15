@@ -2,8 +2,8 @@ clc
 clear
 addpath(genpath('..'))
 
-N = 128;
-k = 64;
+N = 256;
+k = 128;
 crc_length = 0;
 
 F_N=[1 0;1 1];
@@ -13,26 +13,25 @@ pac_params = pac_init(N,k,crc_length,F_N,gen);
 
 dsnr_dB = 2.5;
 rp = rp_RM_Polar(N,k+crc_length,dsnr_dB);
-% rp = rp_modify(rp,[91,93,102,103,106,143,150],[173,179,203,213,226,233,241]);
+rp = rp_modify(rp,[91,93,102,103,106,143,150],[173,179,203,213,226,233,241]);
 
-snr_dB = [1.5];
-L=32; 
+snr_dB = [3];
 
-min_block_num = 100000;
-max_block_num = 100000;
-max_error_num = 100000;
+min_block_num = 500000;
+max_block_num = 500000;
+max_error_num = 500000;
 
 
 frame_errors_count=zeros(1,length(snr_dB));
 bit_errors_count=zeros(1,length(snr_dB));
 n_iter = zeros(1,length(snr_dB));
 
-update_frequency = 1; %命令行输出的频率
-batchsize = 100; % 一次仿真多少个batch
+update_frequency = 100; %命令行输出的频率
+batchsize = 1; % 一次仿真多少个batch
 
 
 elapsetime_filter = zeros(1,update_frequency);
-
+Delta = 1;
 
 for i=1:length(snr_dB)
     sigma = 1/sqrt(2 * pac_params.R) * 10^(-snr_dB(i)/20);
@@ -56,7 +55,7 @@ for i=1:length(snr_dB)
         noise = randn(N, batchsize);
         y = bpsk + sigma * noise;
         llr = 2/sigma^2*y;
-        d_esti = pac_SCL_decoder(pac_params,rp,llr,L);
+        d_esti = pac_fano_decoder(pac_params,rp,llr,Delta);
         errs=sum(d~=d_esti);
         n_iter(i)=n_iter(i)+batchsize;
         frame_errors_count(i)=frame_errors_count(i)+sum(errs>0);
