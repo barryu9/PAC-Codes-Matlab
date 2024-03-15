@@ -11,11 +11,11 @@ gen = [1 0 1 1 0 1 1];
 
 pac_params = pac_init(N,k,crc_length,F_N,gen);
 
-dsnr_dB = 2.5;
+dsnr_dB = 3;
 rp = rp_RM_Polar(N,k+crc_length,dsnr_dB);
 rp = rp_modify(rp,[91,93,102,103,106,143,150],[173,179,203,213,226,233,241]);
 
-snr_dB = [2.5];
+snr_dB = [3];
 
 min_block_num = 500000;
 max_block_num = 500000;
@@ -30,11 +30,11 @@ update_frequency = 100; %命令行输出的频率
 batchsize = 1; % 一次仿真多少个batch
 
 
-elapsetime_filter = zeros(1,update_frequency);
 Delta = 1;
 
 for i=1:length(snr_dB)
     sigma = 1/sqrt(2 * pac_params.R) * 10^(-snr_dB(i)/20);
+    elapsetime_total = 0;
     fprintf("Now Running SNR(dB)=%f\n",snr_dB(i))
     for ii = 1:max_block_num/batchsize
         tic;
@@ -62,9 +62,8 @@ for i=1:length(snr_dB)
         bit_errors_count(i)=bit_errors_count(i)+sum(errs);
 
         update_mod = mod(ii,update_frequency);
-        elapsetime_filter(update_mod+1)=toc;
-        elapsetime_average = mean(elapsetime_filter);
-
+        elapsetime_total=elapsetime_total+toc;
+        elapsetime_average=elapsetime_total/n_iter(i);
         if(update_mod==0)
            fprintf("%.2fdB@%i, Block Error(s):%i, BLER=%.2e; Bit Error(s):%i, BER=%.2e; %.2f bk/s, %s remaining\n",...
               snr_dB(i),ii*batchsize,frame_errors_count(i),frame_errors_count(i)/n_iter(i),bit_errors_count(i),bit_errors_count(i)/(n_iter(i)*k),...

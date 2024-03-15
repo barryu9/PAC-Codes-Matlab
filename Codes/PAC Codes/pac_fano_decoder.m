@@ -114,7 +114,7 @@ for batch_index = 1:batchsize
             c_state(1)=0;
             %   -----------------------------------------------------------------------
             if phi == 0
-                mu(phi+1) = 0  - log2(1+exp(-(1 - 2 * u_esti(phi+1))*P(1))) - alphaq * log2(1-pe(phi+1));
+                mu(phi+1) = B  - log2(1+exp(-(1 - 2 * u_esti(phi+1))*P(1))) - alphaq * log2(1-pe(phi+1));
             else
                 mu(phi+1) = mu(phi) - log2(1+exp(-(1 - 2 * u_esti(phi+1))*P(1))) - alphaq * log2(1-pe(phi+1));
             end
@@ -320,7 +320,7 @@ for batch_index = 1:batchsize
                                         end
                                     end
                                     if kk == 0
-                                        mu_pre = -100;
+                                        mu_pre = -inf;
                                     end
                                 end
 
@@ -620,7 +620,7 @@ for batch_index = 1:batchsize
                                 end
                             end
                             if kk == 0
-                                mu_pre = -100;
+                                mu_pre = -inf;
                             end
                         end
 

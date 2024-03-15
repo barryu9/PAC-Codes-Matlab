@@ -9,7 +9,7 @@ while 1
     end
 
     jj = j;
-    for k = j - 1:-1:0
+    for k = j-1 :-1:0
         mu_pre = bmetric(k+1);
         if mu_pre >= Threshold
             if bmetric_cut(k+1) >= Threshold
@@ -28,7 +28,7 @@ while 1
             end
         end
         if k == 0
-            mu_pre = -100;
+            mu_pre = -inf;
         end
     end
 

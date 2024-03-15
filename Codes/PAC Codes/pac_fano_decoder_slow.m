@@ -5,6 +5,7 @@ k = pac_params.k;
 conv_depth=pac_params.conv_depth;
 gen = pac_params.gen;
 pe = zeros(1,N);
+% pe=rp.pe;
 c_state = zeros(conv_depth-1, 1);
 curr_state = zeros(conv_depth-1, k); %0~k-1,1:|g|-1;
 phi = 0;
